@@ -16,3 +16,10 @@
 # Add a feed source
 echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+#!/bin/bash
+# 添加 Lucky 插件源
+git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
+# 添加 DDNS-go 插件源
+git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
+# 添加 OpenClash (如果官方源没有)
+git clone --depth=1 -b master https://github.com/vernesong/OpenClash.git package/openclash
