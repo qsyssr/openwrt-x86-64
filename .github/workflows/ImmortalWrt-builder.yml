@@ -10,11 +10,11 @@
 # See /LICENSE for more information.
 #
 
-name: OpenWrt Builder
+name: ImmortalWrt-builder
 
 on:
   repository_dispatch:
-  workflow_dispatch:
+  workflow_dispatch: [ openwrt-x86-64 ]   # 只在你的这个分支 push 时自动触发（可选）
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
