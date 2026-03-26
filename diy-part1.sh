@@ -30,5 +30,5 @@ git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-eas
 git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/luci-app-adguardhome
 
 # 4. 克隆屏幕驱动和相关工具 (移动到 package 目录下)
-git clone https://github.com/zzzz0317/xgp-v3-screen package/xgp-v3-screen
-git clone https://github.com/zzzz0317/kmod-fb-tft-gc9307 package/kmod-fb-tft-gc9307
+# git clone https://github.com/zzzz0317/xgp-v3-screen package/xgp-v3-screen
+# git clone https://github.com/zzzz0317/kmod-fb-tft-gc9307 package/kmod-fb-tft-gc9307
