@@ -16,25 +16,24 @@
 # Add a feed source
 echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
-# Add the QModem feed source
+# 2. 添加 QModem 源 (添加 ;main 强制指定分支是正确的)
 echo 'src-git qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-# Update and install the feed packages
-./scripts/feeds update qmodem
-./scripts/feeds install -a -p qmodem
-# (Optional) Force install to overwrite existing drivers/apps
-./scripts/feeds install -a -f -p qmodem
+
 #!/bin/bash
-# 添加 Lucky 插件源
+
+# 1. 修改默认 IP (可选，如果需要修改默认 192.168.1.1)
+# sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
+
+# 2. 清理可能存在的重复包 (防止编译因同名包冲突失败)
+rm -rf feeds/luci/applications/luci-app-lucky
+rm -rf feeds/luci/applications/luci-app-openclash
+
+# 3. 克隆插件到 package 目录 (确保路径正确)
 git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
-# 添加 DDNS-go 插件源
-# git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
-# 添加 OpenClash (如果官方源没有)
 git clone --depth=1 -b master https://github.com/vernesong/OpenClash.git package/openclash
-# 添加 easytier (如果官方源没有)
-git clone https://github.com/EasyTier/luci-app-easytier.git /opt/luci-app-easytier
-# 添加 xgp-v3-screen (如果官方源没有)
-git clone https://github.com/zzzz0317/xgp-v3-screen
-# 添加 kmod-fb-tft-gc9307 (如果官方源没有)
-git clone https://github.com/zzzz0317/kmod-fb-tft-gc9307
-# 添加 tailscale (如果官方源没有)
-git clone https://github.com/asvow/luci-app-tailscale
+git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
+git clone https://github.com/asvow/luci-app-tailscale package/luci-app-tailscale
+
+# 4. 克隆屏幕驱动和相关工具 (移动到 package 目录下)
+git clone https://github.com/zzzz0317/xgp-v3-screen package/xgp-v3-screen
+git clone https://github.com/zzzz0317/kmod-fb-tft-gc9307 package/kmod-fb-tft-gc9307
