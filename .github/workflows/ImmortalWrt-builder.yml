@@ -52,13 +52,14 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
 
     # ========== 关键修改2：增加 Swap（防 OOM）==========
-    - name: Setup Swap (16GB) to prevent OOM
+    - name: 增加虚拟内存 (Swap)
       run: |
+        sudo swapoff /swapfile || true
+        sudo rm -rf /swapfile
         sudo fallocate -l 8G /swapfile
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
-        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
         free -h
 
     # ========== 关键修改3：添加缓存（大幅省时间和内存）==========
