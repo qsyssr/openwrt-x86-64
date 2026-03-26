@@ -111,10 +111,19 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
+    - name: Cleanup build_dir
+      run: |
+        # 只清理宿主工具的缓存，不影响下载的源码
+        rm -rf openwrt/build_dir/host/gn
+        rm -rf openwrt/build_dir/host/build-gcc
+
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        # 强制预编译 host 工具，且使用较低的线程数，避免 OOM
+        make -j1 tools/install || make -j1 tools/install V=s
+        # 编译主体固件
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
