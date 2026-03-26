@@ -11,8 +11,8 @@
 
 # ====================== 你的基础修改 ======================
 
-# 1. 修改默认 IP 为 10.10.10.212
-sed -i 's/192.168.1.1/10.10.10.212/g' package/base-files/files/bin/config_generate
+# 1. 修改默认 IP 为 10.10.0.1
+sed -i 's/192.168.1.1/10.10.0.1/g' package/base-files/files/bin/config_generate
 
 # 2. 修改默认主机名
 sed -i 's/ImmortalWrt/SqualyWrt/g' package/base-files/files/bin/config_generate
