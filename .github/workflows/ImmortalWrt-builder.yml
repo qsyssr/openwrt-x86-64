@@ -25,13 +25,7 @@ env:
 
 jobs:
   build:
-    # ========== 关键修改1：使用更大规格的 runner（推荐）==========
-    # 如果你 GitHub 有 Pro/Team/Enterprise 权限，可以直接用 ubuntu-22.04-16core
-    # 免费用户若无法使用 larger runner，请先改回 ubuntu-22.04 并重点靠下面的 Swap
-    runs-on: ubuntu-22.04     # ← 修改这里（推荐）
-    # runs-on: ubuntu-22.04          # ← 如果 larger runner 不可用，改回这行
-
-    timeout-minutes: 480             # ← 新增：给 8 小时，避免 GitHub 强制中断
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout
