@@ -16,6 +16,13 @@
 # Add a feed source
 echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+# Add the QModem feed source
+echo 'src-git qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+# Update and install the feed packages
+./scripts/feeds update qmodem
+./scripts/feeds install -a -p qmodem
+# (Optional) Force install to overwrite existing drivers/apps
+./scripts/feeds install -a -f -p qmodem
 #!/bin/bash
 # 添加 Lucky 插件源
 git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
