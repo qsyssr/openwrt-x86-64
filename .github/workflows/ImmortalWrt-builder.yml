@@ -41,6 +41,7 @@ jobs:
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
+        sudo -E apt-get -qq install python3-setuptools
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -51,7 +52,7 @@ jobs:
         sudo swapoff -a || true
         sudo rm -rf /swapfile
         # 使用 dd 替代 fallocate，确保兼容性
-        sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
+        sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
@@ -64,7 +65,8 @@ jobs:
         path: |
           /workdir/openwrt/dl
           /workdir/openwrt/ccache
-        key: ${{ runner.os }}-immortalwrt-${{ hashFiles('.config') }}
+        # 增加 DIY 脚本的 hash，确保脚本改动时缓存刷新
+        key: ${{ runner.os }}-immortalwrt-${{ hashFiles('.config', 'diy-part1.sh', 'diy-part2.sh') }}
         restore-keys: |
           ${{ runner.os }}-immortalwrt-
 
@@ -72,7 +74,19 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        # 如果目录存在且有 .git，则同步；否则删除残留文件重新克隆
+        if [ -d "openwrt/.git" ]; then
+          echo "检测到缓存，正在同步远程分支..."
+          cd openwrt
+          git remote set-url origin $REPO_URL
+          git fetch --all
+          git checkout $REPO_BRANCH
+          git reset --hard origin/$REPO_BRANCH
+        else
+          echo "未检测到缓存或目录异常，正在全新克隆..."
+          rm -rf openwrt
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        fi
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 加载自定义信息源
@@ -102,6 +116,8 @@ jobs:
         cd openwrt
         make defconfig
         make download -j8
+        # 删除下载失败的（小于 1kb）重复包，防止缓存污染
+        find dl -size -1k -exec rm -f {} \;
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
