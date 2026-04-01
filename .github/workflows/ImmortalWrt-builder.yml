@@ -55,8 +55,10 @@ jobs:
       uses: easimon/maximize-build-space@master
       with:
         root-reserve-mb: 10240
-        swap-size-mb: 1024
-        remove-dotnet: 'false'
+        swap-size-mb: 8192  
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
 
     - name: 初始化环境
       env:
