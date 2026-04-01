@@ -43,13 +43,6 @@ jobs:
             echo "mnt_exists=false" >> $GITHUB_OUTPUT
             echo "/mnt is not mounted, skipping maximize-build-space"
           fi
-    - name: Check build space after maximize-build-space
-      run: |
-          df -h
-          lsblk
-          free -h
-    - name: Checkout code
-      uses: actions/checkout@v4
     - name: Maximize build space
       if: steps.check-mnt.outputs.mnt_exists == 'true'
       uses: easimon/maximize-build-space@master
@@ -59,6 +52,13 @@ jobs:
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
+    - name: Check build space after maximize-build-space
+      run: |
+          df -h
+          lsblk
+          free -h
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: 初始化环境
       env:
