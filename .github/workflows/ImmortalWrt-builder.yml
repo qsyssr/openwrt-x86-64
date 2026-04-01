@@ -52,15 +52,15 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 增加虚拟内存 (Swap)
-      run: |
-        sudo swapoff -a || true
+   # - name: 增加虚拟内存 (Swap)
+     # run: |
+     #   sudo swapoff -a || true
         # 关键：路径改到 /mnt
-        sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=8192
-        sudo chmod 600 /mnt/swapfile
-        sudo mkswap /mnt/swapfile
-        sudo swapon /mnt/swapfile
-        free -h
+      #  sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=8192
+       # sudo chmod 600 /mnt/swapfile
+      #  sudo mkswap /mnt/swapfile
+      #  sudo swapon /mnt/swapfile
+      #  free -h
 
     # ========== 关键修改3：添加缓存（大幅省时间和内存）==========
     - name: 缓存 OpenWrt 构建文件
