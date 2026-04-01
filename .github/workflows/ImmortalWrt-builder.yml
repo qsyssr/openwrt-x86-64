@@ -28,19 +28,35 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-    - name: 查看
-      uses: actions/checkout@main
-
-    - name: 清理磁盘空间
-      uses: jlumbroso/free-disk-space@main
+    - name: Check build space
+      run: |
+        df -h
+        lsblk
+        free -h
+    - name: Check if /mnt is mounted
+      id: check-mnt
+      run: |
+          if mountpoint -q /mnt; then
+            echo "mnt_exists=true" >> $GITHUB_OUTPUT
+            echo "/mnt is mounted"
+          else
+            echo "mnt_exists=false" >> $GITHUB_OUTPUT
+            echo "/mnt is not mounted, skipping maximize-build-space"
+          fi
+    - name: Maximize build space
+      if: steps.check-mnt.outputs.mnt_exists == 'true'
+      uses: easimon/maximize-build-space@master
       with:
-        tool-cache: true
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        # 这一行会自动帮你处理好 Swap，你就不需要手动 dd 了
-       # swap-storage: true
+          root-reserve-mb: 10240
+          swap-size-mb: 1024
+          remove-dotnet: 'false'
+    - name: Check build space after maximize-build-space
+      run: |
+          df -h
+          lsblk
+          free -h
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: 初始化环境
       env:
