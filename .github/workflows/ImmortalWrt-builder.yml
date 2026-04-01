@@ -31,32 +31,35 @@ jobs:
     - name: 查看
       uses: actions/checkout@main
 
+    - name: 清理磁盘空间
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        # 这一行会自动帮你处理好 Swap，你就不需要手动 dd 了
+        swap-storage: true
+
     - name: 初始化环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-        sudo docker image prune --all --force
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq full-upgrade -y
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool libyaml-dev libz-dev lld llvm lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-docutils python3-pip python3-ply python3-pyelftools python3-setuptools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
-        sudo -E apt-get -qq install python3-setuptools
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    # ========== 关键修改2：增加 Swap（防 OOM）==========
     - name: 增加虚拟内存 (Swap)
       run: |
         sudo swapoff -a || true
-        sudo rm -rf /swapfile
-        # 使用 dd 替代 fallocate，确保兼容性
-        sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
+        # 关键：路径改到 /mnt
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=8192
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
         free -h
 
     # ========== 关键修改3：添加缓存（大幅省时间和内存）==========
@@ -125,7 +128,6 @@ jobs:
     - name: 清理 build_dir
       run: |
         # 只清理宿主工具的缓存，不影响下载的源码
-        rm -rf openwrt/build_dir/host/gn
         rm -rf openwrt/build_dir/host/build-gcc
 
     - name: 编译固件
