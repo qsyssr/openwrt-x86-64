@@ -29,3 +29,5 @@ echo "Cloning custom packages..."
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky.git package/lucky
 git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
 git clone --depth=1 https://github.com/rufengsuixing/luci-app-adguardhome.git package/luci-app-adguardhome
+git clone --depth=1 https://github.com/timsaya/luci-app-bandix.git package/luci-app-bandix
+git clone --depth=1 https://github.com/timsaya/openwrt-bandix.git package/openwrt-bandix
